@@ -33,12 +33,11 @@ class TransactionPracticeScreen extends StatelessWidget {
     ];
 
     // Tính tổng thu nhập và chi tiêu.
-    final totals = calculateTotalsByType(transactions);
+    final summary = calculateFinancialSummary(transactions);
 
-    final income = totals[TransactionType.income] ?? 0;
-    final expense = totals[TransactionType.expense] ?? 0;
-
-    final balance = income - expense;
+    final income = summary['income'] ?? 0;
+    final expense = summary['expense'] ?? 0;
+    final balance = summary['balance'] ?? 0;
 
     // Lọc riêng các khoản chi tiêu.
     final expenseTransactions = filterTransactionsByType(
@@ -98,7 +97,7 @@ class TransactionPracticeScreen extends StatelessWidget {
               subtitle: transaction.note == null
                   ? null
                   : Text(transaction.note!),
-              trailing: Text('${transaction.amount} VND'),
+              trailing: Text(transaction.formattedAmount),
             ),
         ],
       ),

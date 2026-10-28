@@ -69,11 +69,19 @@ Map<TransactionType, int> calculateTotalsByType(
   return totals;
 }
 
-List<Transaction> filterLargeTransaction(List<Transaction> transactions, int minimumAmount) {
-  return transactions.where((transaction) => transaction.amount >= minimumAmount).toList();
+List<Transaction> filterLargeTransaction(
+  List<Transaction> transactions,
+  int minimumAmount,
+) {
+  return transactions
+      .where((transaction) => transaction.amount >= minimumAmount)
+      .toList();
 }
 
-int calculateLargeExpenseTransaction(List<Transaction> transactions, int minimumAmount) {
+int calculateLargeExpenseTransaction(
+  List<Transaction> transactions,
+  int minimumAmount,
+) {
   return transactions
       .where((transaction) => transaction.type == TransactionType.expense)
       .fold<int>(0, (total, transaction) => total + transaction.amount);
@@ -82,6 +90,46 @@ int calculateLargeExpenseTransaction(List<Transaction> transactions, int minimum
 List<String> getExpenseList(List<Transaction> transactions) {
   return transactions
       .where((transaction) => transaction.type == TransactionType.expense)
-      .map((transaction) => transaction.tile)
+      .map((transaction) => transaction.title)
       .toList();
+}
+
+String formatMoney(int amount, {String currency = 'VND'}) {
+  return '$amount $currency';
+}
+
+List<Transaction> filterTransactionsByMinimumAmount(List<Transaction> transactions,
+    { required int minimumAmount }) {
+  return transactions.where((transaction) => transaction.amount >= minimumAmount).toList();
+}
+
+int calculateTotalWhere(
+    List<Transaction> transactions,
+    bool Function(Transaction) predicate,
+    ) {
+  return transactions.where(predicate)
+      .fold<int>(0, (total, transaction) => (total + transaction.amount));
+}
+
+Map<String, int> calculateFinancialSummary(List<Transaction> transactions) {
+  final totals = calculateTotalsByType(transactions);
+  final income = totals[TransactionType.income] ?? 0;
+  final expense = totals[TransactionType.expense] ?? 0;
+
+  return {'income': income, 'expense': expense, 'balance': income - expense};
+}
+
+String formatMoney_2(int amount, [String currency = 'VND']) {
+  return '$amount $currency';
+}
+
+extension TransactionExtension on Transaction {
+  bool get isIncome => type == TransactionType.income;
+  bool get isExpense => type == TransactionType.expense;
+  bool get isLargeTransaction => amount >= 1000000;
+  String get formattedAmount => '$amount VND';
+}
+
+void runPracticeCommand() {
+
 }
